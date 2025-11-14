@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Digital Exhaust</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748; /* gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4fd1c5; /* cyan-500 */
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38b2ac; /* cyan-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 h-full overflow-y-auto">
+    
+    <div class="container mx-auto max-w-5xl p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-cyan-400 mb-2">Your Digital Exhaust</h1>
+            <p class="text-lg md:text-xl text-gray-300">What this website knows about you, just from your visit.</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Card 1: Automatically Collected Data -->
+            <div class="bg-gray-800 shadow-2xl rounded-xl p-6 md:p-8 order-2 lg:order-1">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4 border-b border-gray-700 pb-2">1. Data Collected Automatically</h2>
+                <p class="text-gray-400 mb-6 text-sm">This is the "digital exhaust" you leave on *every* site. It's collected passively without you clicking anything.</p>
+                
+                <div class="space-y-4">
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">User Agent (Browser & OS)</span>
+                        <span id="userAgent" class="block text-base text-gray-100 break-words"></span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <span class="block text-xs font-medium text-cyan-300">Language</span>
+                            <span id="language" class="block text-base text-gray-100"></span>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <span class="block text-xs font-medium text-cyan-300">Timezone</span>
+                            <span id="timezone" class="block text-base text-gray-100"></span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <span class="block text-xs font-medium text-cyan-300">Screen Resolution</span>
+                            <span id="screenRes" class="block text-base text-gray-100"></span>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <span class="block text-xs font-medium text-cyan-300">Current Viewport</span>
+                            <span id="viewport" class="block text-base text-gray-100"></span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Platform (Deprecated)</span>
+                        <span id="platform" class="block text-base text-gray-100 break-words"></span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Device Model (Experimental API)</span>
+                        <span id="deviceModel" class="block text-base text-gray-100 break-words">Pending...</span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Browser Fingerprint (Hash)</span>
+                        <span id="fingerprint" class="block text-base text-gray-100 break-words text-yellow-300"></span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Referring Page</span>
+                        <span id="referrer" class="block text-base text-gray-100 break-words"></span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Tracking Cookie ('_tracker_id')</span>
+                        <span id="cookie" class="block text-base text-gray-100 break-words"></span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Local Storage ('user_prefs')</span>
+                        <span id="storage" class="block text-base text-gray-100 break-words"></span>
+                    </div>
+                </div>
+
+                <button id="simulateButton" class="w-full bg-gray-600 hover:bg-gray-500 text-cyan-300 font-semibold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out mt-6">
+                    Simulate Site Activity
+                </button>
+            </div>
+
+            <!-- Card 2: Consent-Based Data -->
+            <div class="bg-gray-800 shadow-2xl rounded-xl p-6 md:p-8 order-1 lg:order-2">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4 border-b border-gray-700 pb-2">2. Data Requiring Consent</h2>
+                <p class="text-gray-400 mb-6 text-sm">This data is more sensitive. By law (and browser design), this site must explicitly ask for your permission to access it.</p>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Precise Geolocation</span>
+                        <span id="geolocation" class="block text-base text-gray-100">Pending...</span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Device Orientation</span>
+                        <span id="orientation" class="block text-base text-gray-100">Pending...</span>
+                    </div>
+                </div>
+
+                <button id="consentButton" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold py-3 px-6 rounded-lg transition-all duration-300 ease-in-out text-lg shadow-md hover:shadow-cyan-400/30">
+                    Grant Permission & Share More
+                </button>
+            </div>
+
+        </div> <!-- /Main Content Grid -->
+
+    </div> <!-- /Container -->
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white text-gray-900 p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 id="modalTitle" class="text-xl font-bold text-red-600 mb-2">Permission Denied</h3>
+            <p id="modalMessage" class="text-base mb-4">You (or your browser) denied the request. This data will not be shared.</p>
+            <button id="modalClose" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        const el = {
+            userAgent: document.getElementById('userAgent'),
+            language: document.getElementById('language'),
+            timezone: document.getElementById('timezone'),
+            screenRes: document.getElementById('screenRes'),
+            viewport: document.getElementById('viewport'),
+            platform: document.getElementById('platform'),
+            deviceModel: document.getElementById('deviceModel'),
+            fingerprint: document.getElementById('fingerprint'),
+            referrer: document.getElementById('referrer'),
+            cookie: document.getElementById('cookie'),
+            storage: document.getElementById('storage'),
+            geolocation: document.getElementById('geolocation'),
+            orientation: document.getElementById('orientation'),
+            simulateButton: document.getElementById('simulateButton'),
+            consentButton: document.getElementById('consentButton'),
+            messageModal: document.getElementById('messageModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalMessage: document.getElementById('modalMessage'),
+            modalClose: document.getElementById('modalClose'),
+        };
+
+        // --- Utility Functions ---
+
+        /**
+         * Shows a modal message.
+         * @param {string} title - The title for the modal.
+         * @param {string} message - The message body.
+         * @param {boolean} isError - If true, styles title as error (red).
+         */
+        function showMessage(title, message, isError = true) {
+            el.modalTitle.textContent = title;
+            el.modalMessage.textContent = message;
+            el.modalTitle.className = `text-xl font-bold mb-2 ${isError ? 'text-red-600' : 'text-cyan-600'}`;
+            el.messageModal.classList.remove('hidden');
+        }
+
+        /**
+         * Gets a specific cookie by name.
+         * @param {string} name - The name of the cookie.
+         * @returns {string} The cookie value or an empty string.
+         */
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return "";
+        }
+
+        /**
+         * A simple, non-cryptographic hashing function (cyrb53)
+         * to create a fingerprint from a string.
+         * @param {string} str - The string to hash.
+         * @returns {string} A hash value.
+         */
+        function simpleHash(str) {
+            let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+            for(let i = 0, ch; i < str.length; i++) {
+                ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+            h1 = Math.imul(h1 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+            h2 = Math.imul(h2 ^ (h1 >>> 13), 3266489909);
+            return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+        }
+
+        // --- Data Population Functions ---
+
+        /**
+         * Populates all "automatic" data fields.
+         */
+        async function updateBasicData() {
+            el.userAgent.textContent = navigator.userAgent;
+            el.language.textContent = navigator.language;
+            el.timezone.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            el.screenRes.textContent = `${screen.width} x ${screen.height}`;
+            el.viewport.textContent = `${window.innerWidth} x ${window.innerHeight}`;
+            
+            // Platform (Deprecated)
+            const platform = navigator.platform || "N/A";
+            el.platform.textContent = platform;
+            
+            // Referrer
+            el.referrer.textContent = document.referrer ? document.referrer : "N/A (Direct Visit)";
+
+            // Check for simulated tracking data
+            const trackerCookie = getCookie('_tracker_id');
+            el.cookie.textContent = trackerCookie ? trackerCookie : "Not Set";
+            
+            const userPrefs = localStorage.getItem('user_prefs');
+            el.storage.textContent = userPrefs ? userPrefs : "Not Set";
+
+            // Generate Fingerprint
+            const fingerprintString = [
+                navigator.userAgent,
+                navigator.language,
+                Intl.DateTimeFormat().resolvedOptions().timeZone,
+                `${screen.width}x${screen.height}`,
+                platform
+            ].join('|');
+            el.fingerprint.textContent = `hash: ${simpleHash(fingerprintString)}`;
+
+            // Device Model (Experimental)
+            if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                try {
+                    const data = await navigator.userAgentData.getHighEntropyValues(['model']);
+                    el.deviceModel.textContent = data.model || "Not Provided by Browser";
+                    el.deviceModel.classList.add('text-green-400');
+                } catch (error) {
+                    console.error("Error getting device model:", error);
+                    el.deviceModel.textContent = "Permission Denied or Error";
+                    el.deviceModel.classList.add('text-red-400');
+                }
+            } else {
+                el.deviceModel.textContent = "API Not Supported";
+                el.deviceModel.classList.add('text-gray-500');
+            }
+        }
+
+        // --- Event Handlers ---
+
+        /**
+         * Handles the "Simulate" button click.
+         * Sets a cookie and local storage item to demonstrate tracking.
+         */
+        function handleSimulateClick() {
+            // Set a tracking cookie (expires in 1 day)
+            const d = new Date();
+            d.setTime(d.getTime() + (24*60*60*1000));
+            const expires = "expires="+ d.toUTCString();
+            const trackerId = `user-${Math.random().toString(36).substring(2, 10)}`;
+            document.cookie = `_tracker_id=${trackerId};${expires};path=/;SameSite=Lax`;
+
+            // Set a local storage item
+            localStorage.setItem('user_prefs', JSON.stringify({ theme: 'dark', last_visit: Date.now() }));
+
+            // Update the UI to show the new data
+            updateBasicData();
+            
+            el.simulateButton.textContent = "Activity Simulated!";
+            el.simulateButton.disabled = true;
+            setTimeout(() => {
+                el.simulateButton.textContent = "Simulate Site Activity";
+                el.simulateButton.disabled = false;
+            }, 2000);
+        }
+
+        /**
+         * Handles the "Consent" button click.
+         * Requests Geolocation and Device Orientation permissions.
+         */
+        async function handleConsentClick() {
+            el.consentButton.disabled = true;
+            el.consentButton.textContent = "Requesting...";
+
+            // 1. Request Geolocation
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude, accuracy } = position.coords;
+                        el.geolocation.textContent = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)} (Accuracy: ${accuracy.toFixed(0)}m)`;
+                        el.geolocation.classList.add('text-green-400');
+                    },
+                    (error) => {
+                        el.geolocation.textContent = "Permission Denied";
+                        el.geolocation.classList.add('text-red-400');
+                        showMessage("Geolocation Denied", "You (or your browser) denied the request for your location.");
+                    }
+                );
+            } else {
+                el.geolocation.textContent = "Not supported by browser";
+                el.geolocation.classList.add('text-gray-500');
+            }
+
+            // 2. Request Device Orientation
+            // This requires a multi-step check for iOS
+            try {
+                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    // This is for iOS 13+
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        addOrientationListener();
+                    } else {
+                        throw new Error('Permission Denied');
+                    }
+                } else {
+                    // This is for Android or other browsers
+                    addOrientationListener();
+                }
+            } catch (error) {
+                el.orientation.textContent = "Permission Denied or Not Supported";
+                el.orientation.classList.add('text-red-400');
+                if (error.message === 'Permission Denied') {
+                     showMessage("Orientation Denied", "You denied the request for device orientation data.");
+                }
+            }
+
+            el.consentButton.textContent = "Permissions Requested";
+        }
+        
+        /**
+         * Helper function to add the orientation listener.
+         */
+        function addOrientationListener() {
+            window.addEventListener('deviceorientation', (event) => {
+                if (event.alpha === null && event.beta === null && event.gamma === null) {
+                    el.orientation.textContent = "Available, but no data received. (Try on mobile?)";
+                    el.orientation.classList.add('text-yellow-400');
+                } else {
+                    const alpha = event.alpha ? event.alpha.toFixed(2) : 'n/a';
+                    const beta = event.beta ? event.beta.toFixed(2) : 'n/a';
+                    const gamma = event.gamma ? event.gamma.toFixed(2) : 'n/a';
+                    el.orientation.textContent = `Alpha: ${alpha}, Beta: ${beta}, Gamma: ${gamma}`;
+                    el.orientation.classList.add('text-green-400');
+                }
+                // Remove listener after one event to save battery
+            }, { once: true });
+        }
+
+
+        // --- Page Load & Event Listeners ---
+
+        // Initial data load on page start
+        document.addEventListener('DOMContentLoaded', updateBasicData);
+
+        // Update viewport size dynamically on resize
+        window.addEventListener('resize', () => {
+            el.viewport.textContent = `${window.innerWidth} x ${window.innerHeight}`;
+        });
+        
+        // Button Clicks
+        el.simulateButton.addEventListener('click', handleSimulateClick);
+        el.consentButton.addEventListener('click', handleConsentClick);
+        
+        // Modal Close
+        el.modalClose.addEventListener('click', () => {
+            el.messageModal.classList.add('hidden');
+        });
+
+    </script>
+</body>
+</html>

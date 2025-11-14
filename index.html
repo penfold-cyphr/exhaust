@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="bg-gray-700 p-4 rounded-lg">
-                        <span class="block text-xs font-medium text-cyan-300">Platform (Deprecated)</span>
+                        <span class="block text-xs font-medium text-cyan-300">Platform </span>
                         <span id="platform" class="block text-base text-gray-100 break-words"></span>
                     </div>
                     <div class="bg-gray-700 p-4 rounded-lg">
@@ -305,14 +305,41 @@
          */
         function predictDevice(w, h, ua) {
             const deviceDB = [
-                { name: 'iPhone 14 Pro', w: 1179, h: 2556, ua: 'iPhone' },
-                { name: 'iPhone 14 Pro Max', w: 1290, h: 2796, ua: 'iPhone' },
-                { name: 'iPhone 15 Pro', w: 1179, h: 2556, ua: 'iPhone' },
+                // Apple (10)
+                { name: 'iPhone 16 Pro Max', w: 1290, h: 2796, ua: 'iPhone' },
+                { name: 'iPhone 16 Pro', w: 1179, h: 2556, ua: 'iPhone' },
+                { name: 'iPhone 16', w: 1179, h: 2556, ua: 'iPhone' },
+                { name: 'iPhone 16 Plus', w: 1290, h: 2796, ua: 'iPhone' },
                 { name: 'iPhone 15 Pro Max', w: 1290, h: 2796, ua: 'iPhone' },
+                { name: 'iPhone 15 Pro', w: 1179, h: 2556, ua: 'iPhone' },
+                { name: 'iPhone 15', w: 1179, h: 2556, ua: 'iPhone' },
+                { name: 'iPhone 15 Plus', w: 1290, h: 2796, ua: 'iPhone' },
+                { name: 'iPhone 14 Pro Max', w: 1290, h: 2796, ua: 'iPhone' },
+                { name: 'iPhone 14 Pro', w: 1179, h: 2556, ua: 'iPhone' },
+                
+                // Google (10)
+                { name: 'Google Pixel 10 Pro', w: 1344, h: 2992, ua: 'Android' },
+                { name: 'Google Pixel 10', w: 1080, h: 2400, ua: 'Android' },
+                { name: 'Google Pixel 9 Pro', w: 1344, h: 2992, ua: 'Android' },
+                { name: 'Google Pixel 9', w: 1080, h: 2400, ua: 'Android' },
                 { name: 'Google Pixel 8 Pro', w: 1344, h: 2992, ua: 'Android' },
-                { name: 'Samsung Galaxy S24 Ultra', w: 1440, h: 3120, ua: 'Android' },
-                { name: 'Samsung Galaxy S23 Ultra', w: 1440, h: 3088, ua: 'Android' },
+                { name: 'Google Pixel 8', w: 1080, h: 2400, ua: 'Android' },
+                { name: 'Google Pixel 8a', w: 1080, h: 2400, ua: 'Android' },
                 { name: 'Google Pixel 7 Pro', w: 1440, h: 3120, ua: 'Android' },
+                { name: 'Google Pixel 7', w: 1080, h: 2400, ua: 'Android' },
+                { name: 'Google Pixel 7a', w: 1080, h: 2400, ua: 'Android' },
+
+                // Samsung (10)
+                { name: 'Samsung Galaxy S25 Ultra', w: 1440, h: 3120, ua: 'Android' },
+                { name: 'Samsung Galaxy S25+', w: 1080, h: 2340, ua: 'Android' },
+                { name: 'Samsung Galaxy S25', w: 1080, h: 2340, ua: 'Android' },
+                { name: 'Samsung Galaxy S24 Ultra', w: 1440, h: 3120, ua: 'Android' },
+                { name: 'Samsung Galaxy S24+', w: 1440, h: 3112, ua: 'Android' },
+                { name: 'Samsung Galaxy S24', w: 1080, h: 2340, ua: 'Android' },
+                { name: 'Samsung Galaxy S23 Ultra', w: 1440, h: 3088, ua: 'Android' },
+                { name: 'Samsung Galaxy S23+', w: 1080, h: 2340, ua: 'Android' },
+                { name: 'Samsung Galaxy S23', w: 1080, h: 2340, ua: 'Android' },
+                { name: 'Samsung Galaxy S23 FE', w: 1080, h: 2340, ua: 'Android' }
             ];
 
             // Check for exact resolution + UA match (High Confidence)

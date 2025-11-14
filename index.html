@@ -47,9 +47,10 @@
                         <span class="block text-xs font-medium text-cyan-300">User Agent (Browser & OS)</span>
                         <span id="userAgent" class="block text-base text-gray-100 break-words"></span>
                     </div>
+                    <!-- FIX 1: Added missing elements for language and timezone -->
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-gray-700 p-4 rounded-lg">
-                            <span class="block text-xs font-medium text-cyan-300">Language</span>
+                            <span class="block text-xs font-medium text-cyan-300">Browser Language</span>
                             <span id="language" class="block text-base text-gray-100"></span>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
@@ -57,19 +58,31 @@
                             <span id="timezone" class="block text-base text-gray-100"></span>
                         </div>
                     </div>
+                    <!-- End of Fix 1 -->
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-gray-700 p-4 rounded-lg">
-                            <span class="block text-xs font-medium text-cyan-300">Screen Resolution</span>
+                            <span class="block text-xs font-medium text-cyan-300">Logical Screen (CSS)</span>
                             <span id="screenRes" class="block text-base text-gray-100"></span>
                         </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <span class="block text-xs font-medium text-cyan-300">Device Pixel Ratio</span>
+                            <span id="pixelRatio" class="block text-base text-gray-100"></span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg col-span-2">
+                        <span class="block text-xs font-medium text-cyan-300">Calculated Physical Resolution</span>
+                        <span id="physicalRes" class="block text-base text-gray-100 text-yellow-300 font-bold"></span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <span class="block text-xs font-medium text-cyan-300">Current Viewport</span>
                             <span id="viewport" class="block text-base text-gray-100"></span>
                         </div>
-                    </div>
-                    <div class="bg-gray-700 p-4 rounded-lg">
-                        <span class="block text-xs font-medium text-cyan-300">Platform </span>
-                        <span id="platform" class="block text-base text-gray-100 break-words"></span>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <!-- FIX 2: Removed duplicate span -->
+                            <span class="block text-xs font-medium text-cyan-300">Platform (Deprecated)</span>
+                            <span id="platform" class="block text-base text-gray-100 break-words"></span>
+                        </div>
                     </div>
                     <div class="bg-gray-700 p-4 rounded-lg">
                         <span class="block text-xs font-medium text-cyan-300">Detected Fonts (Brand Check)</span>
@@ -158,6 +171,8 @@
             viewport: document.getElementById('viewport'),
             platform: document.getElementById('platform'),
             detectedFonts: document.getElementById('detectedFonts'),
+            pixelRatio: document.getElementById('pixelRatio'),
+            physicalRes: document.getElementById('physicalRes'),
             predictedDevice: document.getElementById('predictedDevice'),
             predictionConfidence: document.getElementById('predictionConfidence'),
             fingerprint: document.getElementById('fingerprint'),
@@ -379,7 +394,21 @@
             el.userAgent.textContent = navigator.userAgent;
             el.language.textContent = navigator.language;
             el.timezone.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            el.screenRes.textContent = `${screen.width} x ${screen.height}`;
+            
+            // --- Resolution & Pixel Ratio (The fix is here) ---
+            const ratio = window.devicePixelRatio || 1;
+            const logicalWidth = screen.width;
+            const logicalHeight = screen.height;
+            
+            // Calculate physical pixels
+            const physicalWidth = Math.round(logicalWidth * ratio);
+            const physicalHeight = Math.round(logicalHeight * ratio);
+
+            el.screenRes.textContent = `${logicalWidth} x ${logicalHeight}`;
+            el.pixelRatio.textContent = ratio ? `${ratio}x` : 'N/A';
+            el.physicalRes.textContent = `${physicalWidth} x ${physicalHeight}`;
+            // --- End of Fix ---
+
             el.viewport.textContent = `${window.innerWidth} x ${window.innerHeight}`;
             
             // Platform (Deprecated)
@@ -414,7 +443,8 @@
             const fontString = detectBrandFonts();
 
             // Predict Device (run *before* fingerprint)
-            const { device, confidence } = predictDevice(screen.width, screen.height, navigator.userAgent);
+            // Use the NEW physicalWidth and physicalHeight variables
+            const { device, confidence } = predictDevice(physicalWidth, physicalHeight, navigator.userAgent);
             el.predictedDevice.textContent = device;
             el.predictionConfidence.textContent = `Confidence: ${confidence}`;
             
@@ -433,7 +463,8 @@
                 navigator.userAgent,
                 navigator.language,
                 Intl.DateTimeFormat().resolvedOptions().timeZone,
-                `${screen.width}x${screen.height}`,
+                `${physicalWidth}x${physicalHeight}`, // <-- FIX: Use physical res
+                ratio, // <-- NEW: Add pixel ratio
                 platform,
                 fontString, // Add detected fonts to the fingerprint
                 utmStringForDisplay, // Add UTMs to the fingerprint

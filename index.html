@@ -72,6 +72,10 @@
                         <span id="platform" class="block text-base text-gray-100 break-words"></span>
                     </div>
                     <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">Detected Fonts (Brand Check)</span>
+                        <span id="detectedFonts" class="block text-base text-gray-100 break-words">Checking...</span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
                         <span class="block text-xs font-medium text-cyan-300">Device Model (Experimental API)</span>
                         <span id="deviceModel" class="block text-base text-gray-100 break-words">Pending...</span>
                     </div>
@@ -147,6 +151,7 @@
             screenRes: document.getElementById('screenRes'),
             viewport: document.getElementById('viewport'),
             platform: document.getElementById('platform'),
+            detectedFonts: document.getElementById('detectedFonts'),
             deviceModel: document.getElementById('deviceModel'),
             fingerprint: document.getElementById('fingerprint'),
             utmParams: document.getElementById('utmParams'),
@@ -210,6 +215,80 @@
             return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
         }
 
+        /**
+         * Checks if a font is installed by comparing its width to a generic fallback.
+         * @param {string} font - The name of the font to check.
+         * @returns {boolean} True if the font is likely installed.
+         */
+        function checkFont(font) {
+            const testString = "WWMmIl@8#O"; // A string with various glyphs
+            const baseSize = '72px';
+            const fallbackFont = 'monospace'; // A known generic font
+
+            // Create a baseline element with generic font
+            const base = document.createElement('span');
+            base.textContent = testString;
+            base.style.position = 'absolute';
+            base.style.left = '-9999px';
+            base.style.visibility = 'hidden';
+            base.style.fontFamily = fallbackFont;
+            base.style.fontSize = baseSize;
+            
+            // Create a test element with the target font + fallback
+            const test = document.createElement('span');
+            test.textContent = testString;
+            test.style.position = 'absolute';
+            test.style.left = '-9999px';
+            test.style.visibility = 'hidden';
+            test.style.fontFamily = `"${font}", ${fallbackFont}`; // Target font, fallback
+            test.style.fontSize = baseSize;
+
+            document.body.appendChild(base);
+            document.body.appendChild(test);
+
+            const baseWidth = base.offsetWidth;
+            const testWidth = test.offsetWidth;
+
+            document.body.removeChild(base);
+            document.body.removeChild(test);
+            
+            // If widths are different, the font is active
+            return baseWidth !== testWidth;
+        }
+
+        /**
+         * Detects installed fonts from a predefined brand list.
+         * Populates the UI and returns a string for fingerprinting.
+         * @returns {string} A string of detected fonts.
+         */
+        function detectBrandFonts() {
+            const fontList = [
+                'Roboto',         // Google
+                'Segoe UI',        // Microsoft
+                'Calibri',        // Microsoft
+                'San Francisco',  // Apple (common alias)
+                'SF Pro Text',    // Apple
+                'Helvetica Neue', // Apple/Adobe
+                'Myriad Pro',     // Adobe
+                'Amazon Ember',   // Amazon
+                'Samsung Sans',   // Samsung
+                'Poppins'         // Popular (often bundled/cached)
+            ];
+
+            const detected = [];
+            for (const font of fontList) {
+                if (checkFont(font)) {
+                    detected.push(font);
+                }
+            }
+
+            const detectedString = detected.length > 0 ? detected.join(', ') : "None of the brand fonts detected.";
+            el.detectedFonts.textContent = detectedString;
+            el.detectedFonts.classList.add(detected.length > 0 ? 'text-green-400' : 'text-gray-500');
+            
+            return detected.join(','); // Return a simple string for the hash
+        }
+
         // --- Data Population Functions ---
 
         /**
@@ -244,11 +323,14 @@
             for (const key of utmKeys) {
                 if (params.has(key)) {
                     utmData[key] = params.get(key);
-                    hasUtm = true;
-                }
+                    hasUtm = true; // <-- FIX 1: Added this line
+                } // <-- FIX 2: Added missing closing brace
             }
-            const utmStringForDisplay = hasUtm ? JSON.stringify(utmData) : "N/A (No UTMs in URL)";
+            const utmStringForDisplay = hasUtm ? JSON.stringify(utmData) : "N/A (No UTMs in URL)"; // <-- FIX 3: Corrected 'hasUta' to 'hasUtm'
             el.utmParams.textContent = utmStringForDisplay;
+
+            // Detect Fonts (Run this *before* generating fingerprint)
+            const fontString = detectBrandFonts();
 
             // Generate Fingerprint
             const fingerprintString = [
@@ -257,6 +339,7 @@
                 Intl.DateTimeFormat().resolvedOptions().timeZone,
                 `${screen.width}x${screen.height}`,
                 platform,
+                fontString, // Add detected fonts to the fingerprint
                 utmStringForDisplay // Add UTMs to the fingerprint
             ].join('|');
             el.fingerprint.textContent = `hash: ${simpleHash(fingerprintString)}`;

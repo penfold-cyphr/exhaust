@@ -357,15 +357,26 @@
                 { name: 'Samsung Galaxy S23 FE', w: 1080, h: 2340, ua: 'Android' }
             ];
 
+            // --- MODIFICATION START ---
+            // Create an array to hold all high-confidence matches
+            const highConfidenceMatches = [];
+
             // Check for exact resolution + UA match (High Confidence)
             for (const device of deviceDB) {
                 // Check both portrait and landscape orientations
                 if (ua.includes(device.ua) && 
                     ((device.w === w && device.h === h) || (device.w === h && device.h === w))) 
                 {
-                    return { device: device.name, confidence: 'High (99%)' };
+                    // Add the matching device name to the array
+                    highConfidenceMatches.push(device.name);
                 }
             }
+            
+            // If we have one or more matches, join them with " / "
+            if (highConfidenceMatches.length > 0) {
+                return { device: highConfidenceMatches.join(' / '), confidence: 'High (99%)' };
+            }
+            // --- MODIFICATION END ---
             
             // Generic platform detection (Medium Confidence)
             if (ua.includes('iPhone')) {

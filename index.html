@@ -75,10 +75,16 @@
                         <span class="block text-xs font-medium text-cyan-300">Detected Fonts (Brand Check)</span>
                         <span id="detectedFonts" class="block text-base text-gray-100 break-words">Checking...</span>
                     </div>
-                    <div class="bg-gray-700 p-4 rounded-lg">
-                        <span class="block text-xs font-medium text-cyan-300">Device Model (Experimental API)</span>
-                        <span id="deviceModel" class="block text-base text-gray-100 break-words">Pending...</span>
+                    
+                    <!-- Predicted Device Block (Replaces Device Model) -->
+                    <div class="bg-gray-700 p-4 rounded-lg col-span-2">
+                        <span class="block text-xs font-medium text-cyan-300">Predicted Device (from Fingerprint)</span>
+                        <div class="flex justify-between items-baseline">
+                            <span id="predictedDevice" class="block text-lg text-green-400 font-bold"></span>
+                            <span id="predictionConfidence" class="block text-sm text-gray-300"></span>
+                        </div>
                     </div>
+
                     <div class="bg-gray-700 p-4 rounded-lg">
                         <span class="block text-xs font-medium text-cyan-300">Browser Fingerprint (Hash)</span>
                         <span id="fingerprint" class="block text-base text-gray-100 break-words text-yellow-300"></span>
@@ -152,7 +158,8 @@
             viewport: document.getElementById('viewport'),
             platform: document.getElementById('platform'),
             detectedFonts: document.getElementById('detectedFonts'),
-            deviceModel: document.getElementById('deviceModel'),
+            predictedDevice: document.getElementById('predictedDevice'),
+            predictionConfidence: document.getElementById('predictionConfidence'),
             fingerprint: document.getElementById('fingerprint'),
             utmParams: document.getElementById('utmParams'),
             referrer: document.getElementById('referrer'),
@@ -289,6 +296,53 @@
             return detected.join(','); // Return a simple string for the hash
         }
 
+        /**
+         * Simulates device prediction based on a small database.
+         * @param {number} w - Screen width
+         * @param {number} h - Screen height
+         * @param {string} ua - User Agent string
+         * @returns {object} { device: string, confidence: string }
+         */
+        function predictDevice(w, h, ua) {
+            const deviceDB = [
+                { name: 'iPhone 14 Pro', w: 1179, h: 2556, ua: 'iPhone' },
+                { name: 'iPhone 14 Pro Max', w: 1290, h: 2796, ua: 'iPhone' },
+                { name: 'iPhone 15 Pro', w: 1179, h: 2556, ua: 'iPhone' },
+                { name: 'iPhone 15 Pro Max', w: 1290, h: 2796, ua: 'iPhone' },
+                { name: 'Google Pixel 8 Pro', w: 1344, h: 2992, ua: 'Android' },
+                { name: 'Samsung Galaxy S24 Ultra', w: 1440, h: 3120, ua: 'Android' },
+                { name: 'Samsung Galaxy S23 Ultra', w: 1440, h: 3088, ua: 'Android' },
+                { name: 'Google Pixel 7 Pro', w: 1440, h: 3120, ua: 'Android' },
+            ];
+
+            // Check for exact resolution + UA match (High Confidence)
+            for (const device of deviceDB) {
+                // Check both portrait and landscape orientations
+                if (ua.includes(device.ua) && 
+                    ((device.w === w && device.h === h) || (device.w === h && device.h === w))) 
+                {
+                    return { device: device.name, confidence: 'High (99%)' };
+                }
+            }
+            
+            // Generic platform detection (Medium Confidence)
+            if (ua.includes('iPhone')) {
+                return { device: 'Unknown iPhone', confidence: 'Medium (60%)' };
+            }
+            if (ua.includes('Android')) {
+                return { device: 'Unknown Android Device', confidence: 'Medium (50%)' };
+            }
+            if (ua.includes('Windows')) {
+                return { device: 'Windows PC', confidence: 'Medium (70%)' };
+            }
+            if (ua.includes('Macintosh')) { // 'Macintosh' is the key
+                return { device: 'Apple Mac', confidence: 'Medium (70%)' };
+            }
+
+            // Low confidence fallback
+            return { device: 'Unknown Device', confidence: 'Low (20%)' };
+        }
+
         // --- Data Population Functions ---
 
         /**
@@ -332,6 +386,21 @@
             // Detect Fonts (Run this *before* generating fingerprint)
             const fontString = detectBrandFonts();
 
+            // Predict Device (run *before* fingerprint)
+            const { device, confidence } = predictDevice(screen.width, screen.height, navigator.userAgent);
+            el.predictedDevice.textContent = device;
+            el.predictionConfidence.textContent = `Confidence: ${confidence}`;
+            
+            // Set color based on confidence
+            el.predictedDevice.classList.remove('text-green-400', 'text-yellow-400', 'text-red-400');
+            if (confidence.startsWith('High')) {
+                el.predictedDevice.classList.add('text-green-400');
+            } else if (confidence.startsWith('Medium')) {
+                el.predictedDevice.classList.add('text-yellow-400');
+            } else {
+                el.predictedDevice.classList.add('text-red-400');
+            }
+
             // Generate Fingerprint
             const fingerprintString = [
                 navigator.userAgent,
@@ -340,25 +409,12 @@
                 `${screen.width}x${screen.height}`,
                 platform,
                 fontString, // Add detected fonts to the fingerprint
-                utmStringForDisplay // Add UTMs to the fingerprint
+                utmStringForDisplay, // Add UTMs to the fingerprint
+                device // Add predicted device to the fingerprint
             ].join('|');
             el.fingerprint.textContent = `hash: ${simpleHash(fingerprintString)}`;
 
-            // Device Model (Experimental)
-            if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
-                try {
-                    const data = await navigator.userAgentData.getHighEntropyValues(['model']);
-                    el.deviceModel.textContent = data.model || "Not Provided by Browser";
-                    el.deviceModel.classList.add('text-green-400');
-                } catch (error) {
-                    console.error("Error getting device model:", error);
-                    el.deviceModel.textContent = "Permission Denied or Error";
-                    el.deviceModel.classList.add('text-red-400');
-                }
-            } else {
-                el.deviceModel.textContent = "API Not Supported";
-                el.deviceModel.classList.add('text-gray-500');
-            }
+            // Device Model (Experimental) - REMOVED
         }
 
         // --- Event Handlers ---

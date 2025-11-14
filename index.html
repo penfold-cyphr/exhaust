@@ -80,6 +80,10 @@
                         <span id="fingerprint" class="block text-base text-gray-100 break-words text-yellow-300"></span>
                     </div>
                     <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block text-xs font-medium text-cyan-300">UTM Parameters</span>
+                        <span id="utmParams" class="block text-base text-gray-100 break-words"></span>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
                         <span class="block text-xs font-medium text-cyan-300">Referring Page</span>
                         <span id="referrer" class="block text-base text-gray-100 break-words"></span>
                     </div>
@@ -145,6 +149,7 @@
             platform: document.getElementById('platform'),
             deviceModel: document.getElementById('deviceModel'),
             fingerprint: document.getElementById('fingerprint'),
+            utmParams: document.getElementById('utmParams'),
             referrer: document.getElementById('referrer'),
             cookie: document.getElementById('cookie'),
             storage: document.getElementById('storage'),
@@ -231,13 +236,28 @@
             const userPrefs = localStorage.getItem('user_prefs');
             el.storage.textContent = userPrefs ? userPrefs : "Not Set";
 
+            // UTM Parameters
+            const params = new URLSearchParams(window.location.search);
+            const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+            const utmData = {};
+            let hasUtm = false;
+            for (const key of utmKeys) {
+                if (params.has(key)) {
+                    utmData[key] = params.get(key);
+                    hasUtm = true;
+                }
+            }
+            const utmStringForDisplay = hasUtm ? JSON.stringify(utmData) : "N/A (No UTMs in URL)";
+            el.utmParams.textContent = utmStringForDisplay;
+
             // Generate Fingerprint
             const fingerprintString = [
                 navigator.userAgent,
                 navigator.language,
                 Intl.DateTimeFormat().resolvedOptions().timeZone,
                 `${screen.width}x${screen.height}`,
-                platform
+                platform,
+                utmStringForDisplay // Add UTMs to the fingerprint
             ].join('|');
             el.fingerprint.textContent = `hash: ${simpleHash(fingerprintString)}`;
 
